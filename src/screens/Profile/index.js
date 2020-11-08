@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react'
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, StatusBar, SafeAreaView, Image, Dimensions, Switch } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import {logout} from '../../redux/action/login'
-import {userLogout} from '../../redux/action/user'
+import {userLogout , editUser} from '../../redux/action/user'
 import style from '../../helper'
 import { imageURI } from '../../utils'
 import Back from '../../assets/icons/arrow-left.svg'
@@ -11,11 +11,14 @@ import Arrow from '../../assets/icons/arrow-right.svg'
 import { RectButton } from 'react-native-gesture-handler'
 import BottomSheet from 'reanimated-bottom-sheet'
 import Animated from 'react-native-reanimated'
+import ImagePicker from 'react-native-image-crop-picker';
 
 const Profile = ({ navigation }) => {
     const [isNotification, setNotification] = useState(false)
     const { data } = useSelector(state => state.user)
+    const { token } = useSelector(state => state.auth)
     const dispatch = useDispatch()
+    const [imageFile, setImage] = useState('')
     const bs = useRef()
     const fall = new Animated.Value(1)
 
@@ -40,6 +43,47 @@ const Profile = ({ navigation }) => {
         dispatch(userLogout())
     }
 
+    const takePhotoFromCamera = () => {
+        ImagePicker.openCamera({
+          compressImageMaxWidth: 300,
+          compressImageMaxHeight: 300,
+          cropping: true,
+          compressImageQuality: 0.7
+        }).then(image => {
+            console.log(image);
+            setImage(image);
+            const formData = new FormData()
+            formData.append('photo', {
+                uri: image.path,
+                type: image.mime,
+                name: image.filename
+            })
+            dispatch(editUser(formData, token))
+            bs.current.snapTo(1);
+        });
+      }
+    
+      const choosePhotoFromLibrary = () => {
+        ImagePicker.openPicker({
+          width: 300,
+          height: 300,
+          cropping: true,
+          compressImageQuality: 0.7
+        }).then(image => {
+          console.log(image);
+          setImage(image.path);
+          const formData = new FormData()
+          formData.append('photo', {
+            uri: image.path,
+            type: image.mime,
+            name: image.filename
+        })
+          console.log(formData)
+          dispatch(editUser(formData, token))
+          bs.current.snapTo(1);
+        });
+      }
+
     const renderHeader = () => (
         <View style={styles.header}>
             <View style={styles.panelHeader}>
@@ -55,10 +99,10 @@ const Profile = ({ navigation }) => {
                 <Text style={styles.panelSubtitle}>Choose Your Profile Picture</Text>
             </View>
             <View style={{marginBottom: 40}}>
-                <TouchableOpacity style={styles.panelButton}>
+                <TouchableOpacity style={styles.panelButton} onPress={takePhotoFromCamera}>
                     <Text style={styles.panelButtonTitle}>Take Photo</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.panelButton}>
+                <TouchableOpacity style={styles.panelButton} onPress={choosePhotoFromLibrary}>
                     <Text style={styles.panelButtonTitle}>Choose From Library</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
