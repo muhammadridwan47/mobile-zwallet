@@ -20,7 +20,7 @@ const Topup = ({ navigation }) => {
 		return (
 			<View style={styles.card}>
 				<Text style={{color: style.primary, marginRight: 25, fontWeight: 'bold'}}>{index+1}</Text>
-				<Text style={{color: '#7A7886', fontSize: 16, flexWrap: 'wrap'}}>{item.title}</Text>
+				<Text style={{color: '#7A7886', fontSize: 16, flexWrap: 'wrap', lineHeight: 27}}>{item.title}</Text>
 			</View>
 		)
 	}
@@ -42,7 +42,7 @@ const Topup = ({ navigation }) => {
                                 </TouchableOpacity>
 								<View>
 									<Text style={{marginBottom: 10}}>Virtual Account Number</Text>
-									<Text>2389 0{dataUser.phone}</Text>
+									<Text style={{color: style.dark, fontWeight: 'bold', fontSize: 16}}>2389 0{dataUser.phone}</Text>
 								</View>
                             </View>
                         </View>

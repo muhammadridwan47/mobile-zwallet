@@ -1,4 +1,4 @@
-import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT, IS_ADMIN } from '../type/login'
+import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT, IS_ADMIN, IS_USER } from '../type/login'
 
 const initialState = {
     token: '',
@@ -8,7 +8,8 @@ const initialState = {
     isEmailActive: false,
     isPasswordActive: false,
     isEyeClick: false,
-    isAdmin: false
+    isAdmin: false,
+    isUser: false
 };
 
 export default (state = initialState, action) => {
@@ -31,12 +32,21 @@ export default (state = initialState, action) => {
                 ...state,
                 error: action.payload.data.message,
                 loading: false,
-                isLogin: false
+                isLogin: false,
+                isAdmin: false,
+                isUser: false
             }
         case IS_ADMIN:
             return {
                 ...state,
-                isAdmin: true
+                isUser: false,
+                isAdmin: true,
+            }
+        case IS_USER:
+            return {
+                ...state,
+                isAdmin: false,
+                isUser: true
             }
         case LOGOUT:
             return {

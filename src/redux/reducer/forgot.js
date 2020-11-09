@@ -1,11 +1,12 @@
-import { EMAIL_FILLED, RESET_FAILED, RESET_REQUEST, RESET_SUCCESS  } from '../type/forgot'
+import { EMAIL_FILLED, RESET_FAILED, RESET_REQUEST, RESET_SUCCESS, EMAIL_CHECK } from '../type/forgot'
 
 const initialState = {
     email: '',
     isEmailFilled: false,
     loading: false,
     isSuccess: false,
-    isFailed: false
+    isFailed: false,
+    messageEmail: ''
 }
 
 export default (state = initialState, action) => {
@@ -15,6 +16,11 @@ export default (state = initialState, action) => {
                 ...state,
                 email: action.payload,
                 isEmailFilled: true
+            }
+        case EMAIL_CHECK:
+            return {
+                ...state,
+                messageEmail: action.payload
             }
         case RESET_REQUEST:
             return {
@@ -38,7 +44,8 @@ export default (state = initialState, action) => {
         default:
             return {
                 ...state,
-                data: {}
+                isSuccess: false,
+                isFailed: false
             }
     }
 }

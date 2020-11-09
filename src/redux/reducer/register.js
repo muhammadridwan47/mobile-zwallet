@@ -1,4 +1,4 @@
-import { FORM_FILLED, PIN_FILLED, REGISTER_REQUEST, REGISTER_SUCCESS, REGISTER_FAILED } from '../type/register'
+import { FORM_FILLED, PIN_FILLED, REGISTER_REQUEST, REGISTER_SUCCESS, REGISTER_FAILED, EMAIL_CHECK } from '../type/register'
 
 const initialState = {
     data: {
@@ -11,7 +11,9 @@ const initialState = {
     isFormFilled: false,
     isPinFilled: false,
     isSuccess: false,
-    message: ''
+    message: '',
+    emailChecked: false,
+    messageEmail: ''
 }
 
 export default (state = initialState, action) => {
@@ -25,12 +27,17 @@ export default (state = initialState, action) => {
                 },
                 isFormFilled: true
             }
+        case EMAIL_CHECK:
+            return {
+                ...state,
+                messageEmail: action.payload
+            }
         case PIN_FILLED:
             return {
                 ...state,
                 data: {
                     ...state.data,
-                    ...action.payload
+                    pin: action.payload
                 },
                 isPinFilled: true
             }

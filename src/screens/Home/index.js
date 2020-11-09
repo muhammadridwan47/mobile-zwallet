@@ -25,7 +25,7 @@ const Home = ({ navigation }) => {
             return (
                 <View key={index} style={styles.card}>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                        <Image style={{borderRadius: 10, width:52, height:52, marginRight: 20}} source={{uri: imageURI + data.photo}} />
+                        <Image style={{borderRadius: 10, width:52, height:52, marginRight: 20}} source={{uri: imageURI + item.photo}} />
                         <View style={{justifyContent: 'space-between'}}>
                             <Text>{item.receiver === data.name ? item.sender : item.receiver}</Text>
                             <Text>Transfer</Text>
@@ -61,12 +61,14 @@ const Home = ({ navigation }) => {
                                 <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
                                     <Image style={{borderRadius: 10, width:52, height:52, marginRight: 20}} source={{uri: imageURI + data.photo}} />
                                 </TouchableOpacity>
-                                <View style={{height: '100%'}}>
+                                <RectButton onPress={() => navigation.navigate("Transaction")} style={{height: '100%'}}>
                                     <Text style={{color: '#D0D0D0', marginBottom: 5}}>Balance</Text>
                                     <Text style={{color: '#FFFFFF', fontSize: 24, fontWeight: 'bold'}}>Rp{data.balance}</Text>
-                                </View>
+                                </RectButton>
                             </View>
-                            <Bell width={28} height={28} />
+                            <TouchableOpacity onPress={() => navigation.navigate("Notification")}>
+                                <Bell width={28} height={28} />
+                            </TouchableOpacity>
                         </View>
                         <View style={styles.bottom}>
                             <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 40, paddingHorizontal: 16}}>
@@ -81,7 +83,7 @@ const Home = ({ navigation }) => {
                             </View>
                             <View style={{flexDirection:'row', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 25}}>
                                 <Text style={{color: style.title, fontSize: 18, fontWeight: 'bold'}}>Transaction History</Text>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={() => navigation.navigate("History")}>
                                     <Text style={{color:style.primary}}>See all</Text>
                                 </TouchableOpacity>
                             </View>

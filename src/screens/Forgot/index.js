@@ -1,24 +1,40 @@
-import React, { useState, useRef } from 'react'
-import { StatusBar, StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView, Dimensions } from 'react-native'
+import React, { useState, useRef, useEffect } from 'react'
+import { StatusBar, StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView, Dimensions, ToastAndroid } from 'react-native'
 import TextInput from '../../components/inputBorderBottom'
 import style from '../../helper'
-import { login } from '../../redux/action/login'
-import { useDispatch } from 'react-redux'
+import { checkEmail, emailFilled } from '../../redux/action/forgot'
+import { useDispatch, useSelector } from 'react-redux'
 import Mail from '../../assets/icons/mail.svg'
 import MailActive from '../../assets/icons/mail-active.svg'
 
 const Forgot = ({ navigation }) => {
     const dispatch = useDispatch()
+    const { messageEmail, isEmailFilled } = useSelector(state => state.forgot)
     const [email, setEmail] = useState('')
     const [emailActive, setEmailActive] = useState(false)
     const [buttonActive, setButtonActive] = useState(false)
 
+    useEffect(() => {
+        if(isEmailFilled) {
+            navigation.navigate("ResetPassword")
+        }
+    }, [dispatch, emailFilled])
+
     const onSubmit = () => {
-        console.log(email)
+        dispatch(checkEmail(email))
+        if(messageEmail === 'Email already exist') {
+            dispatch(emailFilled(email))
+            if(isEmailFilled) {
+                navigation.navigate("ResetPassword")
+            }
+        } else {
+            ToastAndroid.show(messageEmail, ToastAndroid.SHORT)
+        }
     }
 
     const onChange = () => {
         if(email) {
+            dispatch(checkEmail(email))
             setButtonActive(true)
         } else {
             setButtonActive(false)

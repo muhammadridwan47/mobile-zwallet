@@ -19,12 +19,18 @@ import Info from './screens/Info'
 import Phone from './screens/Phone'
 import Password from './screens/Password'
 import ChangePin from './screens/Pin'
+import History from './screens/History'
+import Transaction from './screens/Transaction'
+import Notification from './screens/Notification'
+import ResgisterPin from './screens/RegisterPin'
+import RegisterSuccess from './screens/RegisterSuccess'
+import ResetPassword from './screens/ResetPassword'
 
 const Stack = createStackNavigator()
 
 const MainNavigator = () => {
     const dispatch = useDispatch()
-    const { token, isLogin } = useSelector(state => state.auth)
+    const { token, isLogin, isUser } = useSelector(state => state.auth)
 
     useEffect(() => {
         if(token) {
@@ -35,9 +41,12 @@ const MainNavigator = () => {
 
     return (
         <NavigationContainer>
-            {isLogin && token ? (
+            {isLogin && token && isUser ? (
                 <Stack.Navigator>
                     <Stack.Screen name="Home" component={Home} options={{headerShown: false}} />
+                    <Stack.Screen name="History" component={History} options={{headerShown: false}} />
+                    <Stack.Screen name="Transaction" component={Transaction} options={{headerShown: false}} />
+                    <Stack.Screen name="Notification" component={Notification} options={{headerShown: false}} />
                     <Stack.Screen name="Search" component={Search} options={{headerShown: false}} />
                     <Stack.Screen name="Input" component={Input} options={{headerShown: false}} />
                     <Stack.Screen name="Confirm" component={Confirm} options={{headerShown: false}} />
@@ -54,7 +63,10 @@ const MainNavigator = () => {
                 <Stack.Navigator>
                     <Stack.Screen name="Login" component={Login} options={{headerShown: false}} />
                     <Stack.Screen name="Register" component={Register} options={{headerShown: false}} />
+                    <Stack.Screen name="RegisterPin" component={ResgisterPin} options={{headerShown: false}} />
+                    <Stack.Screen name="RegisterSuccess" component={RegisterSuccess} options={{headerShown: false}} />
                     <Stack.Screen name="Forgot" component={Forgot} options={{headerShown: false}} />
+                    <Stack.Screen name="ResetPassword" component={ResetPassword} options={{headerShown: false}} />
                 </Stack.Navigator>
             )}
         </NavigationContainer>

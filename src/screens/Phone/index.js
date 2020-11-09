@@ -47,7 +47,7 @@ const Phone = ({ navigation }) => {
 
     return (
         <>
-            <StatusBar backgroundColor={style.primary} />
+            <StatusBar backgroundColor={style.primary} barStyle="light-content" />
             <SafeAreaView>
                 <View>
                     <ScrollView style={{height: '100%', backgroundColor: style.background}}>

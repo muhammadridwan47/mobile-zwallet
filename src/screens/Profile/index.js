@@ -1,8 +1,8 @@
-import React, { useRef, useState } from 'react'
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, StatusBar, SafeAreaView, Image, Dimensions, Switch } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, StatusBar, SafeAreaView, Image, Dimensions, Switch, TextInput } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import {logout} from '../../redux/action/login'
-import {userLogout , editUser} from '../../redux/action/user'
+import {userLogout , editUser, notification, editPhoto} from '../../redux/action/user'
 import style from '../../helper'
 import { imageURI } from '../../utils'
 import Back from '../../assets/icons/arrow-left.svg'
@@ -11,16 +11,21 @@ import Arrow from '../../assets/icons/arrow-right.svg'
 import { RectButton } from 'react-native-gesture-handler'
 import BottomSheet from 'reanimated-bottom-sheet'
 import Animated from 'react-native-reanimated'
-import ImagePicker from 'react-native-image-crop-picker';
+import ImagePicker from 'react-native-image-picker';
 
 const Profile = ({ navigation }) => {
-    const [isNotification, setNotification] = useState(false)
-    const { data } = useSelector(state => state.user)
+    const { data, isNotification } = useSelector(state => state.user)
+    const [notif, setNotif] = useState(isNotification)
+    const [name, setName] = useState(data.name)
+    const [inputActive, setInputActive] = useState(false)
     const { token } = useSelector(state => state.auth)
     const dispatch = useDispatch()
-    const [imageFile, setImage] = useState('')
     const bs = useRef()
     const fall = new Animated.Value(1)
+
+    useEffect(() => {
+        dispatch(notification(notif))
+    }, [notif, setNotif])
 
     const splitPhone = (phone) => {
         if(phone) {
@@ -44,45 +49,40 @@ const Profile = ({ navigation }) => {
     }
 
     const takePhotoFromCamera = () => {
-        ImagePicker.openCamera({
-          compressImageMaxWidth: 300,
-          compressImageMaxHeight: 300,
-          cropping: true,
-          compressImageQuality: 0.7
-        }).then(image => {
-            console.log(image);
-            setImage(image);
+        ImagePicker.launchCamera({
+            mediaType: 'photo'
+        }, (response) => {
+            console.log(response)
             const formData = new FormData()
             formData.append('photo', {
-                uri: image.path,
-                type: image.mime,
-                name: image.filename
+                uri: response.uri,
+                name: response.fileName,
+                type: response.type
             })
-            dispatch(editUser(formData, token))
-            bs.current.snapTo(1);
-        });
-      }
-    
-      const choosePhotoFromLibrary = () => {
-        ImagePicker.openPicker({
-          width: 300,
-          height: 300,
-          cropping: true,
-          compressImageQuality: 0.7
-        }).then(image => {
-          console.log(image);
-          setImage(image.path);
-          const formData = new FormData()
-          formData.append('photo', {
-            uri: image.path,
-            type: image.mime,
-            name: image.filename
+            dispatch(editPhoto(formData, token))
         })
-          console.log(formData)
-          dispatch(editUser(formData, token))
-          bs.current.snapTo(1);
-        });
-      }
+    }
+        
+    const choosePhotoFromLibrary = () => {
+        ImagePicker.launchImageLibrary({
+            mediaType: 'photo',
+        }, (response) => {
+            console.log(response)
+            const formData = new FormData()
+            formData.append('photo', {
+                uri: response.uri,
+                name: response.fileName,
+                type: response.type
+            })
+            dispatch(editPhoto(formData, token))
+        })
+    }
+
+    const editName = () => {
+        console.log(name)
+        dispatch(editUser({name}, token))
+    }
+        
 
     const renderHeader = () => (
         <View style={styles.header}>
@@ -103,7 +103,7 @@ const Profile = ({ navigation }) => {
                     <Text style={styles.panelButtonTitle}>Take Photo</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.panelButton} onPress={choosePhotoFromLibrary}>
-                    <Text style={styles.panelButtonTitle}>Choose From Library</Text>
+                    <Text style={styles.panelButtonTitle}>Choose From Gallery</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.panelButton}
@@ -136,7 +136,18 @@ const Profile = ({ navigation }) => {
                                         <Text style={{color:'#7A7886', marginLeft: 7}}>Edit</Text>
                                     </View>
                                 </View>
-                                <Text style={{fontWeight: 'bold', color: style.dark, fontSize: 24, marginBottom: 10}}>{data.name}</Text>
+                                {inputActive ? (
+                                    <TextInput 
+                                        style={{fontWeight: 'bold', color: style.dark, fontSize: 24, marginBottom: 10}}
+                                        value={name}
+                                        onChangeText={name => setName(name)}
+                                        onSubmitEditing={editName}
+                                    />
+                                ) : (
+                                    <TouchableOpacity onPress={() => setInputActive(true)}>
+                                        <Text style={{fontWeight: 'bold', color: style.dark, fontSize: 24, marginBottom: 10}}>{data.name}</Text>
+                                    </TouchableOpacity>
+                                )}
                                 <Text style={{color:style.darkMed, fontSize: 16}}>+62 {splitPhone(data.phone)}</Text>
                             </View>
                             <View>
@@ -158,7 +169,7 @@ const Profile = ({ navigation }) => {
                                         trackColor={{true: '#6379F4', false: 'rgba(169, 169, 169, 0.4)'}}
                                         thumbColor="#FFFFFF"
                                         value={isNotification}
-                                        onValueChange={setNotification}
+                                        onValueChange={setNotif}
                                     />
                                 </View>
                                 <RectButton onPress={onLogout} style={styles.field}>
@@ -175,6 +186,8 @@ const Profile = ({ navigation }) => {
                 initialSnap={1}
                 callbackNode={fall}
                 enabledGestureInteraction
+                enabledContentGestureInteraction={false}
+                enabledContentTapInteraction
                 renderHeader={renderHeader}
                 renderContent={renderContent}
             />

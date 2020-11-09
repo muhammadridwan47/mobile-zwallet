@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react'
-import { StatusBar, StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView, Dimensions } from 'react-native'
+import { StatusBar, StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView, Dimensions, ToastAndroid } from 'react-native'
 import TextInput from '../../components/inputBorderBottom'
 import style from '../../helper'
-import { login } from '../../redux/action/login'
-import { useDispatch } from 'react-redux'
+import { checkEmail, formFilled } from '../../redux/action/register'
+import { useDispatch, useSelector } from 'react-redux'
 import Person from '../../assets/icons/person.svg'
 import PersonActive from '../../assets/icons/person-active.svg'
 import Mail from '../../assets/icons/mail.svg'
@@ -14,6 +14,7 @@ import Eye from '../../assets/icons/eye-crossed.svg'
 
 const Register = ({ navigation }) => {
     const dispatch = useDispatch()
+    const { isFormFilled, messageEmail } = useSelector(state => state.register)
     const inputEmail = useRef()
     const inputPassword = useRef()
     const [name, setName] = useState('')
@@ -26,11 +27,26 @@ const Register = ({ navigation }) => {
     const [buttonActive, setButtonActive] = useState(false)
 
     const onSubmit = () => {
-        dispatch(login({ email, password }))
+        if(name && email && password) {
+            dispatch(checkEmail(email))
+            if(messageEmail === 'Email Not Found') {
+                dispatch(formFilled({
+                    name,
+                    email,
+                    password
+                }))
+                if(isFormFilled) {
+                    navigation.navigate('RegisterPin')
+                }
+            } else {
+                ToastAndroid.show(messageEmail, ToastAndroid.SHORT)
+            }
+        }
     }
 
     const onChange = () => {
-        if(email && password) {
+        if(name && email && password) {
+            dispatch(checkEmail(email))
             setButtonActive(true)
         } else {
             setButtonActive(false)
@@ -69,9 +85,10 @@ const Register = ({ navigation }) => {
                                     {emailActive ? <MailActive width={25} height={25}/> : <Mail width={25} height={30}/>}
                                 </View>
                                 <TextInput 
+                                    inputref={inputEmail}
                                     value={email}
                                     setActive={setEmailActive}
-                                    onChangeText={text => setEmail(text)}
+                                    onChangeText={text => {setEmail(text)}}
                                     onChange={onChange}
                                     onSubmitEditing={() => inputPassword.current.focus()}
                                     placeholder="Enter your e-mail"
@@ -102,7 +119,7 @@ const Register = ({ navigation }) => {
                                 style={buttonActive ? styles.buttonPrimary : styles.buttonGrey}
                                 onPress={onSubmit}
                             >
-                                <Text style={{color:'#FFFFFF', fontSize: 18}}>Login</Text>
+                                <Text style={{color:'#FFFFFF', fontSize: 18}}>Register</Text>
                             </TouchableOpacity>
                             <Text>Already have an account? Let’s <Text onPress={() => navigation.navigate('Login')} style={{color: '#6379F4', fontWeight: 'bold'}}>Login</Text></Text>
                         </View>

@@ -1,6 +1,6 @@
 import Axios from 'axios'
 import { URI } from '../../utils'
-import { EMAIL_FILLED, RESET_FAILED, RESET_REQUEST, RESET_SUCCESS  } from '../type/forgot'
+import { EMAIL_FILLED, RESET_FAILED, RESET_REQUEST, RESET_SUCCESS, EMAIL_CHECK } from '../type/forgot'
 
 export const emailFilled = email => {
     return {
@@ -37,4 +37,10 @@ export const reset = data => async dispatch => {
     } catch (error) {
         dispatch(resetFailed(error.message))
     }
+}
+
+export const checkEmail = email => async dispatch => {
+    const res = await Axios.post(`${URI}/auth/check`, { email })
+    
+    dispatch({ type: EMAIL_CHECK, payload: res.data.data.message})
 }

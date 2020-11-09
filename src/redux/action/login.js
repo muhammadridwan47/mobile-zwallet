@@ -1,5 +1,5 @@
 import Axios from 'axios'
-import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT, IS_ADMIN } from '../type/login'
+import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT, IS_ADMIN, IS_USER } from '../type/login'
 import { URI } from '../../utils'
 
 export const loginRequest = () => {
@@ -28,12 +28,20 @@ export const isAdmin = () => {
     }
 }
 
+export const isUser = () => {
+    return {
+        type: IS_USER
+    }
+}
+
 export const login = data => async(dispatch) => {
     dispatch(loginRequest())
     try {
         const res = await Axios.post(`${URI}/auth/login`, data)
         if(res.data.data.roles === 'admin') {
             dispatch(isAdmin())
+        } else {
+            dispatch(isUser())
         }
         dispatch(loginSuccess(res.data.data.token))
     } catch (error) {

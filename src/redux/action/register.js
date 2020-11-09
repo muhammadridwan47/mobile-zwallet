@@ -1,5 +1,5 @@
 import Axios from 'axios'
-import { FORM_FILLED, PIN_FILLED, REGISTER_REQUEST, REGISTER_SUCCESS, REGISTER_FAILED } from '../type/register'
+import { FORM_FILLED, PIN_FILLED, REGISTER_REQUEST, REGISTER_SUCCESS, REGISTER_FAILED, EMAIL_CHECK } from '../type/register'
 import { URI } from '../../utils'
 
 export const formFilled = data => {
@@ -34,6 +34,12 @@ export const registerFailed = message => {
         type: REGISTER_FAILED,
         payload: message
     }
+}
+
+export const checkEmail = email => async dispatch => {
+    const res = await Axios.post(`${URI}/auth/check`, { email })
+    
+    dispatch({ type: EMAIL_CHECK, payload: res.data.data.message})
 }
 
 export const signup = data => async dispatch => {

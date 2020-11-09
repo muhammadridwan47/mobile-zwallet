@@ -57,7 +57,7 @@ export default (state = initialState, action) => {
         case NOTIFICATION:
             return {
                 ...state,
-                isNotification: !state.isNotification
+                isNotification: action.payload
             }
         default:
             return {

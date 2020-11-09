@@ -11,7 +11,7 @@ import LockActive from '../../assets/icons/lock-active.svg'
 import Eye from '../../assets/icons/eye-crossed.svg'
 
 const Login = ({ navigation }) => {
-    const { loading, isLogin, error } = useSelector(state => state.auth)
+    const { loading, isLogin, error, isAdmin, isUser } = useSelector(state => state.auth)
     const dispatch = useDispatch()
     const inputPassword = useRef()
     const [email, setEmail] = useState('')
@@ -23,8 +23,12 @@ const Login = ({ navigation }) => {
 
     const onSubmit = async() => {
        dispatch(login({ email, password }))
-       if(isLogin) {
+       if(isLogin && !isAdmin && isUser) {
            ToastAndroid.show('Login Success', ToastAndroid.SHORT)
+       }
+
+       if(isLogin && isAdmin && !isUser) {
+           ToastAndroid.show('Your account is admin please login on our web', ToastAndroid.LONG)
        }
 
        if(error && !isLogin) {
