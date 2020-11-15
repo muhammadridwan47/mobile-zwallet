@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { useDispatch, useSelector } from 'react-redux'
 import { getUser } from './redux/action/user'
+import { deviceToken } from './redux/action/login'
 import Login from './screens/Login'
 import Register from './screens/Register'
 import Forgot from './screens/Forgot'
@@ -25,19 +26,57 @@ import Notification from './screens/Notification'
 import ResgisterPin from './screens/RegisterPin'
 import RegisterSuccess from './screens/RegisterSuccess'
 import ResetPassword from './screens/ResetPassword'
+import messaging from '@react-native-firebase/messaging'
 
 const Stack = createStackNavigator()
 
 const MainNavigator = () => {
     const dispatch = useDispatch()
     const { token, isLogin, isUser } = useSelector(state => state.auth)
+    const [loading, setLoading] = useState(true);
+    const [initialRoute, setInitialRoute] = useState('Home');
+
+    useEffect(() => {
+        messaging().onNotificationOpenedApp(remoteMessage => {
+            console.log(
+              'Notification caused app to open from background state:',
+              remoteMessage.notification,
+            );
+            navigation.navigate(remoteMessage.data.type);
+          });
+
+        messaging()
+        .getInitialNotification()
+        .then(remoteMessage => {
+        if (remoteMessage) {
+          console.log(
+            'Notification caused app to open from quit state:',
+            remoteMessage.notification,
+          );
+          setInitialRoute(initialRoute)
+        }
+        setLoading(false);
+      });
+
+      messaging().getToken().then((token) => {
+          console.log(token)
+          if(!isLogin) {
+            dispatch(deviceToken(token))
+          }
+      })
+    }, [])
 
     useEffect(() => {
         if(token) {
             dispatch(getUser(token))       
         }
+        
         SplashScreen.hide()
     }, [token])
+
+    if(loading) {
+        return null;
+    }
 
     return (
         <NavigationContainer>

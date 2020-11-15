@@ -14,7 +14,7 @@ const Phone = ({ navigation }) => {
     const [inputActive, setActive] = useState(false)
     const [phone, setPhone] = useState('')
     const dispatch = useDispatch()
-    const { data } = useSelector(state => state.user)
+    const { data, isEditFailed } = useSelector(state => state.user)
     const { token } = useSelector(state => state.auth)
 
     const splitPhone = (phone) => {
@@ -36,6 +36,9 @@ const Phone = ({ navigation }) => {
     const addPhone = () => {
         if(phone.length == 11 && phone[0] != 0) {
             dispatch(editUser({ phone }, token))
+            if(isEditFailed) {
+                ToastAndroid.show('Phone already exist', ToastAndroid.SHORT)
+            }
         } else {
             ToastAndroid.show('Phone must be 11 character and not include 0', ToastAndroid.SHORT)
         }

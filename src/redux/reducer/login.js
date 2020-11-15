@@ -1,7 +1,8 @@
-import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT, IS_ADMIN, IS_USER } from '../type/login'
+import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT, IS_ADMIN, IS_USER, TOKEN_DEVICE } from '../type/login'
 
 const initialState = {
     token: '',
+    device_token: '',
     isLogin: false,
     loading: false,
     error: '',
@@ -57,7 +58,13 @@ export default (state = initialState, action) => {
                     rehydrated: true,
                     version: -1
                 },
-                isAdmin: false
+                isAdmin: false,
+                device_token: ''
+            }
+        case TOKEN_DEVICE:
+            return {
+                ...state,
+                device_token: action.payload
             }
         default:
             return state

@@ -34,7 +34,8 @@ const CheckPin = ({ navigation }) => {
                 ...dataTransfer,
                 pin,
                 sender: data.name,
-                photo_sender: data.photo
+                photo_sender: data.photo,
+                device_token: userTransfer.device_token
             }, userTransfer.balance))
         } else {
             ToastAndroid.show('PIN must be Fulfilled', ToastAndroid.SHORT)

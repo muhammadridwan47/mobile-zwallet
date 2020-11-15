@@ -20,9 +20,7 @@ const CurrPin = ({ navigation }) => {
     const onSubmit = () => {
         if(isFull) {
             dispatch(checkPin({pin}, token))
-            if(isEditSuccess) {
-                navigation.replace("Profile")
-            }
+            
         } else {
             ToastAndroid.show('PIN must be Fulfilled', ToastAndroid.SHORT)
         }
@@ -33,6 +31,9 @@ const CurrPin = ({ navigation }) => {
             dispatch(editUser({
                 pin: newPin
             }, token))
+            if(isEditSuccess) {
+                navigation.navigate("Profile")
+            }
         } else {
             ToastAndroid.show('PIN must be Fulfilled', ToastAndroid.SHORT)
         }

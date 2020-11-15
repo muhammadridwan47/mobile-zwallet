@@ -13,6 +13,9 @@ import ExpenseActive from '../../assets/icons/expense-active.svg'
 import moment from 'moment'
 import Animated from 'react-native-reanimated'
 import BottomSheet from 'reanimated-bottom-sheet'
+import DatePicker from '@react-native-community/datetimepicker'
+import CalendarPicker from 'react-native-calendar-picker';
+moment.locale('id')
 
 const History = ({ navigation }) => {
     const dispatch = useDispatch()
@@ -32,6 +35,15 @@ const History = ({ navigation }) => {
         dispatch(getHistory(token))
     }, [])
 
+    const onDateChange = (date, type) => {
+        if (type === 'END_DATE') {
+          setEndDate(date)
+        } else {
+          setStartDate(date)
+          setEndDate(null)
+        }
+      }
+
     const newDataAll = dataAll.sort((a, b) => a.date || a.createdAt - b.date || b.createdAt)
 
     const incomeAll = newDataAll.filter(item => item.receiver === data.name || item.name)
@@ -45,14 +57,42 @@ const History = ({ navigation }) => {
         </View>
     )
 
+    const filter = () => {
+        setModeFilter(true)
+    }
+
     const renderContent = () => (
         <View style={styles.panel}>
             <View style={{alignItems: 'center'}}>
                 <Text style={styles.panelTitle}>Filter By Date</Text>
-                
             </View>
             <View style={{marginBottom: 40}}>
-                
+                <CalendarPicker 
+                    startFromMonday={true}
+                    allowRangeSelection={true}
+                    todayBackgroundColor="#6379F4"
+                    selectedDayColor={style.primary}
+                    selectedDayTextColor="#FFFFFF"
+                    onDateChange={onDateChange}
+                />
+                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <View>
+                        <Text>From</Text>
+                        <Text>{moment(startDate).format('LL')}</Text>
+                    </View>
+                    <View>
+                        <Text>To</Text>
+                        <Text>{moment(endDate).format('LL')}</Text>
+                    </View>
+                </View>
+                <TouchableOpacity style={styles.panelButton} onPress={filter}>
+                    <Text style={styles.panelButtonTitle}>Apply</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.panelButton}
+                    onPress={() => {bs.current.snapTo(1); setFilter(false)}}>
+                    <Text style={styles.panelButtonTitle}>Cancel</Text>
+                </TouchableOpacity>
             </View>
         </View>
     )
@@ -99,6 +139,9 @@ const History = ({ navigation }) => {
 								<Text style={{color: style.white, fontWeight: 'bold', fontSize: 20, marginLeft: 20}}>History</Text>
                             </TouchableOpacity>
                         </View>
+                        {modeFilter ? (
+                            <Text>Filter from {moment(startDate).format('LL')} to {moment(endDate).format('LL')}</Text>
+                        ) : <Text></Text>}
                         <View style={{ marginBottom: 100}}>
                         {modeFilter ? (
                             <FlatList 
@@ -122,27 +165,30 @@ const History = ({ navigation }) => {
                         /> }
                         </View>
                     </ScrollView>
-                    <View style={{flexDirection: 'row', paddingHorizontal: 16, marginTop: 30, marginBottom: 30, justifyContent: 'center', position: 'absolute', bottom: 0}}>
+                    <View style={{zIndex: isFilter ? -1 : 0,flexDirection: 'row', paddingHorizontal: 16, marginTop: 30, marginBottom: 30, justifyContent: 'center', position: 'absolute', bottom: 20}}>
                         <RectButton onPress={() => {setIncome(!income); setExpense(false)}} style={income ? styles.buttonActive : styles.button}>
                             {income ? <IncomeActive width={28} height={28} /> : <Income width={28} height={28} />}
                         </RectButton>
                         <RectButton onPress={() => {setExpense(!expense); setIncome(false)}} style={expense ? styles.buttonActive : styles.button}>
                             {expense ? <ExpenseActive width={28} height={28} /> : <Expense width={28} height={28} />}
                         </RectButton>
-                        <RectButton onPress={() => {bs.current.snapTo(0), setFilter(true)}} style={[styles.button, { paddingHorizontal: 40}]}>
+                        <RectButton onPress={() => { setFilter(true); bs.current.snapTo(0)}} style={[styles.button, { paddingHorizontal: 40}]}>
                             <Text style={{fontSize: 18, color: style.primary, fontWeight: 'bold'}}>Filter By Date</Text>
                         </RectButton>
                     </View>
+                    {modeFilter ? (
+                        <RectButton onPress={() => setModeFilter(false)} style={styles.buttonActive}>
+                            <Text style={{fontSize: 16, color: style.white}}>Cancel Mode Filter</Text>
+                        </RectButton>
+                    ) : <Text></Text>}
                 </View>
             </SafeAreaView>
             <BottomSheet 
                 ref={bs}
-                snapPoints={[360, 0]}
+                snapPoints={[580, 0]}
+                enabledGestureInteraction={false}
                 initialSnap={1}
                 callbackNode={fall}
-                enabledGestureInteraction
-                enabledContentGestureInteraction={false}
-                enabledContentTapInteraction
                 renderHeader={renderHeader}
                 renderContent={renderContent}
             />

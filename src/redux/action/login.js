@@ -1,5 +1,5 @@
 import Axios from 'axios'
-import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT, IS_ADMIN, IS_USER } from '../type/login'
+import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT, IS_ADMIN, IS_USER, TOKEN_DEVICE } from '../type/login'
 import { URI } from '../../utils'
 
 export const loginRequest = () => {
@@ -52,5 +52,12 @@ export const login = data => async(dispatch) => {
 export const logout = () => {
     return {
         type: LOGOUT
+    }
+}
+
+export const deviceToken = (token) => {
+    return {
+        type: TOKEN_DEVICE,
+        payload: token
     }
 }
